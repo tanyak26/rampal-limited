@@ -34,3 +34,5 @@ services:
         sync: false
       - key: CLIENT_AUTO_REPLY_ENABLED
         value: "false"
+      - key: DATABASE_URL
+        sync: false

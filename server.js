@@ -7,6 +7,7 @@ const net = require("net");
 const tls = require("tls");
 const { spawnSync } = require("child_process");
 const { URL } = require("url");
+const { Pool } = require("pg");
 
 const ROOT = __dirname;
 const ENV_PATH = path.join(ROOT, ".env");
@@ -52,6 +53,8 @@ const NOTIFICATION_LOG_PATH = path.join(DATA_DIR, "notifications.log");
 const SQLITE_BIN = "sqlite3";
 const SENDMAIL_BIN = "/usr/sbin/sendmail";
 
+const DATABASE_URL = process.env.DATABASE_URL || "";
+const USE_POSTGRES = Boolean(DATABASE_URL);
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "change-me-admin-password";
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || "";
 const SMTP_HOST = process.env.SMTP_HOST || "";
@@ -65,6 +68,20 @@ const RESEND_FROM = process.env.RESEND_FROM || "";
 const CLIENT_AUTO_REPLY_ENABLED = String(process.env.CLIENT_AUTO_REPLY_ENABLED || "false").toLowerCase() === "true";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
 const sessions = new Map();
+
+const postgresSsl =
+  String(process.env.PGSSLMODE || "").toLowerCase() === "disable"
+    ? false
+    : DATABASE_URL.includes(".render.com")
+      ? { rejectUnauthorized: false }
+      : false;
+
+const pgPool = USE_POSTGRES
+  ? new Pool({
+      connectionString: DATABASE_URL,
+      ssl: postgresSsl
+    })
+  : null;
 
 function ensureStorage() {
   if (!fs.existsSync(DATA_DIR)) {
@@ -104,8 +121,13 @@ function runSqlSafe(sql) {
   }
 }
 
-function setupDatabase() {
+async function setupDatabase() {
   ensureStorage();
+
+  if (USE_POSTGRES) {
+    await setupPostgresDatabase();
+    return;
+  }
 
   runSql(`
     CREATE TABLE IF NOT EXISTS enquiries (
@@ -151,12 +173,106 @@ function setupDatabase() {
   if (count === 0 && fs.existsSync(LEGACY_JSON_PATH)) {
     const legacyRows = JSON.parse(fs.readFileSync(LEGACY_JSON_PATH, "utf8"));
     for (const item of legacyRows) {
-      insertEnquiry(item);
+      await insertEnquiry(item);
     }
   }
 }
 
-function insertEnquiry(enquiry) {
+async function setupPostgresDatabase() {
+  await pgPool.query(`
+    CREATE TABLE IF NOT EXISTS enquiries (
+      id TEXT PRIMARY KEY,
+      created_at TEXT NOT NULL,
+      name TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      email TEXT NOT NULL,
+      event_type TEXT NOT NULL,
+      event_date TEXT,
+      package_name TEXT,
+      guest_count TEXT,
+      budget TEXT,
+      preferred_contact TEXT,
+      notification_status TEXT,
+      notification_method TEXT,
+      notification_reason TEXT,
+      client_reply_status TEXT,
+      client_reply_method TEXT,
+      client_reply_reason TEXT,
+      status TEXT NOT NULL DEFAULT 'New',
+      location TEXT,
+      message TEXT NOT NULL
+    );
+  `);
+
+  const { rows } = await pgPool.query("SELECT COUNT(*)::int AS count FROM enquiries;");
+  const count = rows.length ? Number(rows[0].count) : 0;
+
+  if (count === 0 && fs.existsSync(LEGACY_JSON_PATH)) {
+    const legacyRows = JSON.parse(fs.readFileSync(LEGACY_JSON_PATH, "utf8"));
+    for (const item of legacyRows) {
+      await insertEnquiry(item);
+    }
+  }
+}
+
+async function insertEnquiry(enquiry) {
+  if (USE_POSTGRES) {
+    await pgPool.query(
+      `
+        INSERT INTO enquiries (
+          id,
+          created_at,
+          name,
+          phone,
+          email,
+          event_type,
+          event_date,
+          package_name,
+          guest_count,
+          budget,
+          preferred_contact,
+          notification_status,
+          notification_method,
+          notification_reason,
+          client_reply_status,
+          client_reply_method,
+          client_reply_reason,
+          status,
+          location,
+          message
+        ) VALUES (
+          $1, $2, $3, $4, $5,
+          $6, $7, $8, $9, $10,
+          $11, $12, $13, $14, $15,
+          $16, $17, $18, $19, $20
+        );
+      `,
+      [
+        enquiry.id,
+        enquiry.createdAt,
+        enquiry.name,
+        enquiry.phone,
+        enquiry.email,
+        enquiry.eventType,
+        enquiry.eventDate || "",
+        enquiry.packageName || "",
+        enquiry.guestCount || "",
+        enquiry.budget || "",
+        enquiry.preferredContact || "",
+        enquiry.notificationStatus || "Pending",
+        enquiry.notificationMethod || "",
+        enquiry.notificationReason || "",
+        enquiry.clientReplyStatus || "Pending",
+        enquiry.clientReplyMethod || "",
+        enquiry.clientReplyReason || "",
+        enquiry.status || "New",
+        enquiry.location || "",
+        enquiry.message
+      ]
+    );
+    return;
+  }
+
   runSql(`
     INSERT INTO enquiries (
       id,
@@ -204,7 +320,37 @@ function insertEnquiry(enquiry) {
   `);
 }
 
-function readEnquiries() {
+async function readEnquiries() {
+  if (USE_POSTGRES) {
+    const { rows } = await pgPool.query(`
+      SELECT
+        id,
+        created_at AS "createdAt",
+        name,
+        phone,
+        email,
+        event_type AS "eventType",
+        event_date AS "eventDate",
+        package_name AS "packageName",
+        guest_count AS "guestCount",
+        budget,
+        preferred_contact AS "preferredContact",
+        notification_status AS "notificationStatus",
+        notification_method AS "notificationMethod",
+        notification_reason AS "notificationReason",
+        client_reply_status AS "clientReplyStatus",
+        client_reply_method AS "clientReplyMethod",
+        client_reply_reason AS "clientReplyReason",
+        status,
+        location,
+        message
+      FROM enquiries
+      ORDER BY created_at DESC;
+    `);
+
+    return rows;
+  }
+
   const output = runSql(`
     SELECT
       id,
@@ -722,7 +868,27 @@ async function sendNotificationEmail(enquiry) {
   });
 }
 
-function updateEnquiryNotification(enquiryId, notification) {
+async function updateEnquiryNotification(enquiryId, notification) {
+  if (USE_POSTGRES) {
+    await pgPool.query(
+      `
+        UPDATE enquiries
+        SET
+          notification_status = $1,
+          notification_method = $2,
+          notification_reason = $3
+        WHERE id = $4;
+      `,
+      [
+        notification.delivered ? "Delivered" : "Failed",
+        notification.method || "",
+        notification.reason || "",
+        enquiryId
+      ]
+    );
+    return;
+  }
+
   runSql(`
     UPDATE enquiries
     SET
@@ -769,7 +935,27 @@ async function sendClientReplyEmail(enquiry) {
   });
 }
 
-function updateEnquiryClientReply(enquiryId, replyResult) {
+async function updateEnquiryClientReply(enquiryId, replyResult) {
+  if (USE_POSTGRES) {
+    await pgPool.query(
+      `
+        UPDATE enquiries
+        SET
+          client_reply_status = $1,
+          client_reply_method = $2,
+          client_reply_reason = $3
+        WHERE id = $4;
+      `,
+      [
+        replyResult.delivered ? "Delivered" : "Failed",
+        replyResult.method || "",
+        replyResult.reason || "",
+        enquiryId
+      ]
+    );
+    return;
+  }
+
   runSql(`
     UPDATE enquiries
     SET
@@ -804,12 +990,12 @@ async function handleCreateEnquiry(request, response) {
       ...enquiry
     };
 
-    insertEnquiry(savedEnquiry);
+    await insertEnquiry(savedEnquiry);
     const notification = await sendNotificationEmail(savedEnquiry);
     await delay(800);
     const clientReply = await sendClientReplyEmail(savedEnquiry);
-    updateEnquiryNotification(savedEnquiry.id, notification);
-    updateEnquiryClientReply(savedEnquiry.id, clientReply);
+    await updateEnquiryNotification(savedEnquiry.id, notification);
+    await updateEnquiryClientReply(savedEnquiry.id, clientReply);
     savedEnquiry.notificationStatus = notification.delivered ? "Delivered" : "Failed";
     savedEnquiry.notificationMethod = notification.method || "";
     savedEnquiry.notificationReason = notification.reason || "";
@@ -833,13 +1019,13 @@ async function handleCreateEnquiry(request, response) {
   }
 }
 
-function handleListAdminEnquiries(request, response) {
+async function handleListAdminEnquiries(request, response) {
   if (!requireAdmin(request, response)) {
     return;
   }
 
   try {
-    const enquiries = readEnquiries();
+    const enquiries = await readEnquiries();
     sendJson(response, 200, { enquiries });
   } catch (error) {
     sendJson(response, 500, { error: "Unable to load quote requests." });
@@ -863,11 +1049,22 @@ async function handleUpdateEnquiryStatus(request, response) {
       return;
     }
 
-    runSql(`
-      UPDATE enquiries
-      SET status = ${sqlValue(status)}
-      WHERE id = ${sqlValue(enquiryId)};
-    `);
+    if (USE_POSTGRES) {
+      await pgPool.query(
+        `
+          UPDATE enquiries
+          SET status = $1
+          WHERE id = $2;
+        `,
+        [status, enquiryId]
+      );
+    } else {
+      runSql(`
+        UPDATE enquiries
+        SET status = ${sqlValue(status)}
+        WHERE id = ${sqlValue(enquiryId)};
+      `);
+    }
 
     sendJson(response, 200, { message: "Quote request status updated." });
   } catch (error) {
@@ -885,13 +1082,13 @@ function toCsv(value) {
   return `"${stringValue.replace(/"/g, '""')}"`;
 }
 
-function handleExportEnquiries(request, response) {
+async function handleExportEnquiries(request, response) {
   if (!requireAdmin(request, response)) {
     return;
   }
 
   try {
-    const enquiries = readEnquiries();
+    const enquiries = await readEnquiries();
     const header = [
       "id",
       "createdAt",
@@ -1004,8 +1201,6 @@ function handleAdminSession(request, response) {
   });
 }
 
-setupDatabase();
-
 const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
 
@@ -1061,7 +1256,7 @@ const server = http.createServer(async (request, response) => {
   }
 
   if (request.method === "GET" && url.pathname === "/api/admin/enquiries") {
-    handleListAdminEnquiries(request, response);
+    await handleListAdminEnquiries(request, response);
     return;
   }
 
@@ -1071,7 +1266,7 @@ const server = http.createServer(async (request, response) => {
   }
 
   if (request.method === "GET" && url.pathname === "/api/admin/export") {
-    handleExportEnquiries(request, response);
+    await handleExportEnquiries(request, response);
     return;
   }
 
@@ -1093,6 +1288,14 @@ const server = http.createServer(async (request, response) => {
   sendJson(response, 404, { error: "Route not found." });
 });
 
-server.listen(PORT, () => {
-  console.log(`RAMPAL LIMITED website running on http://localhost:${PORT}`);
-});
+setupDatabase()
+  .then(() => {
+    server.listen(PORT, () => {
+      const storage = USE_POSTGRES ? "Postgres" : "SQLite";
+      console.log(`RAMPAL LIMITED website running on http://localhost:${PORT} with ${storage} storage`);
+    });
+  })
+  .catch((error) => {
+    console.error("Unable to start RAMPAL LIMITED website:", error);
+    process.exit(1);
+  });

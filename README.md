@@ -6,7 +6,7 @@ Included:
 
 - SEO-optimized public website for timber, sheet materials, cement, aggregates, and trade building supplies
 - quote request form backed by the Node API
-- SQLite quote request storage
+- Postgres quote request storage on Render, with SQLite fallback for local testing
 - password-protected admin dashboard at `/rampal-admin`
 - CSV export for quote requests
 - `robots.txt`, `sitemap.xml`, Open Graph tags, and structured data
@@ -35,6 +35,7 @@ NOTIFY_EMAIL=quotes@example.com
 RESEND_API_KEY=your-resend-api-key
 RESEND_FROM=RAMPAL LIMITED <quotes@yourdomain.com>
 CLIENT_AUTO_REPLY_ENABLED=false
+DATABASE_URL=postgres://...
 PORT=3000
 ```
 
@@ -53,12 +54,12 @@ SMTP_FROM=quotes@yourdomain.com
 
 This project includes `render.yaml` for Docker deployment. Create a Render Blueprint or Web Service from the repository, then set the environment variables above.
 
-Keep the attached disk enabled so `data/rampal-quote-requests.db` survives redeploys.
+For production quote storage, create a Render Postgres database and add its internal connection string to the web service as `DATABASE_URL`. If `DATABASE_URL` is missing, the app falls back to local SQLite at `data/rampal-quote-requests.db`, which is useful on your laptop but should not be used for live customer enquiries.
 
 After deployment, submit:
 
 ```text
-https://rampallimited.co.uk/sitemap.xml
+https://rampallimited.com/sitemap.xml
 ```
 
 If the final live domain is different, update the canonical URL, Open Graph URLs, sitemap, and `robots.txt`.
