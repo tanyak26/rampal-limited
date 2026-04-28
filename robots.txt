@@ -4,4 +4,4 @@ Disallow: /rampal-admin
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://rampallimited.co.uk/sitemap.xml
+Sitemap: https://rampallimited.com/sitemap.xml

@@ -8,32 +8,32 @@
   <meta name="keywords" content="RAMPAL LIMITED, wholesale building materials Southall, timber supplier Southall, sheet materials, cement supplier, aggregates supplier, building materials London, builders merchant UB2">
   <meta name="robots" content="index,follow">
   <meta name="theme-color" content="#243528">
-  <link rel="canonical" href="https://rampallimited.co.uk/">
+  <link rel="canonical" href="https://rampallimited.com/">
   <link rel="preload" as="image" href="assets/rampal/wholesale-building-materials-hero.png" fetchpriority="high">
   <link rel="preload" as="image" href="assets/rampal/rampal-logo.svg">
   <meta property="og:site_name" content="RAMPAL LIMITED">
   <meta property="og:title" content="RAMPAL LIMITED | Wholesale Building Materials in Southall">
   <meta property="og:description" content="Trade-focused wholesale supply of timber, sheet materials, cement, aggregates, and building materials from 14 Featherstone Road, Southall UB2 5AA.">
-  <meta property="og:url" content="https://rampallimited.co.uk/">
+  <meta property="og:url" content="https://rampallimited.com/">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://rampallimited.co.uk/assets/rampal/wholesale-building-materials-hero.png">
+  <meta property="og:image" content="https://rampallimited.com/assets/rampal/wholesale-building-materials-hero.png">
   <meta property="og:image:alt" content="Wholesale building materials yard with timber, sheet materials, cement, and aggregate stock.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="RAMPAL LIMITED | Wholesale Building Materials in Southall">
   <meta name="twitter:description" content="Wholesale timber, sheet materials, cement, aggregates, and building supplies for trade buyers.">
-  <meta name="twitter:image" content="https://rampallimited.co.uk/assets/rampal/wholesale-building-materials-hero.png">
+  <meta name="twitter:image" content="https://rampallimited.com/assets/rampal/wholesale-building-materials-hero.png">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
           "@type": ["Organization", "LocalBusiness", "HomeAndConstructionBusiness"],
-          "@id": "https://rampallimited.co.uk/#organization",
+          "@id": "https://rampallimited.com/#organization",
           "name": "RAMPAL LIMITED",
-          "url": "https://rampallimited.co.uk/",
+          "url": "https://rampallimited.com/",
           "description": "Private limited wholesale building materials supplier based in Southall, England.",
           "foundingDate": "2024-08-30",
-          "image": "https://rampallimited.co.uk/assets/rampal/wholesale-building-materials-hero.png",
+          "image": "https://rampallimited.com/assets/rampal/wholesale-building-materials-hero.png",
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "14 Featherstone Road",
@@ -75,16 +75,16 @@
         },
         {
           "@type": "WebSite",
-          "@id": "https://rampallimited.co.uk/#website",
-          "url": "https://rampallimited.co.uk/",
+          "@id": "https://rampallimited.com/#website",
+          "url": "https://rampallimited.com/",
           "name": "RAMPAL LIMITED",
           "publisher": {
-            "@id": "https://rampallimited.co.uk/#organization"
+            "@id": "https://rampallimited.com/#organization"
           }
         },
         {
           "@type": "FAQPage",
-          "@id": "https://rampallimited.co.uk/#faq",
+          "@id": "https://rampallimited.com/#faq",
           "mainEntity": [
             {
               "@type": "Question",
@@ -434,6 +434,45 @@
 
     .card {
       padding: 24px;
+    }
+
+    .product-card {
+      overflow: hidden;
+      padding: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .product-image {
+      aspect-ratio: 16 / 10;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.22s ease;
+    }
+
+    .product-card:hover .product-image img {
+      transform: scale(1.03);
+    }
+
+    .product-body {
+      padding: 20px;
+    }
+
+    .product-kicker {
+      display: inline-flex;
+      margin-bottom: 10px;
+      color: var(--accent-2);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
     }
 
     .card-icon {
@@ -856,25 +895,45 @@
         </div>
 
         <div class="product-grid">
-          <article class="card">
-            <span class="card-icon">T</span>
-            <h3>Timber</h3>
-            <p>Treated timber, carcassing, battens, CLS, joists, and project timber supply enquiries.</p>
+          <article class="card product-card">
+            <div class="product-image">
+              <img src="assets/rampal/product-timber.svg" alt="Stacked trade timber and construction wood lengths" loading="lazy">
+            </div>
+            <div class="product-body">
+              <span class="product-kicker">Trade timber</span>
+              <h3>Timber</h3>
+              <p>Treated timber, carcassing, battens, CLS, joists, and project timber supply enquiries.</p>
+            </div>
           </article>
-          <article class="card">
-            <span class="card-icon">S</span>
-            <h3>Sheet Materials</h3>
-            <p>OSB, plywood, MDF, chipboard, plasterboard, and general board materials for trade use.</p>
+          <article class="card product-card">
+            <div class="product-image">
+              <img src="assets/rampal/product-sheet-materials.svg" alt="Sheet materials including plywood, OSB, MDF, and board stock" loading="lazy">
+            </div>
+            <div class="product-body">
+              <span class="product-kicker">Boards and panels</span>
+              <h3>Sheet Materials</h3>
+              <p>OSB, plywood, MDF, chipboard, plasterboard, and general board materials for trade use.</p>
+            </div>
           </article>
-          <article class="card">
-            <span class="card-icon">C</span>
-            <h3>Cement</h3>
-            <p>Bagged cement, mortar-related supplies, and volume enquiries for active projects.</p>
+          <article class="card product-card">
+            <div class="product-image">
+              <img src="assets/rampal/product-cement.svg" alt="Bagged cement stacked for builders and contractors" loading="lazy">
+            </div>
+            <div class="product-body">
+              <span class="product-kicker">Bagged supply</span>
+              <h3>Cement</h3>
+              <p>Bagged cement, mortar-related supplies, and volume enquiries for active projects.</p>
+            </div>
           </article>
-          <article class="card">
-            <span class="card-icon">A</span>
-            <h3>Cement & Aggregates</h3>
-            <p>Sharp sand, building sand, ballast, gravel, sub-base, and aggregate supply requests.</p>
+          <article class="card product-card">
+            <div class="product-image">
+              <img src="assets/rampal/product-aggregates.svg" alt="Sand, gravel, ballast, and aggregate materials for site supply" loading="lazy">
+            </div>
+            <div class="product-body">
+              <span class="product-kicker">Site materials</span>
+              <h3>Cement & Aggregates</h3>
+              <p>Sharp sand, building sand, ballast, gravel, sub-base, and aggregate supply requests.</p>
+            </div>
           </article>
         </div>
       </div>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 480" role="img" aria-labelledby="title desc">
+  <title id="title">Sheet materials stacked for trade supply</title>
+  <desc id="desc">Plywood, OSB, MDF, and board sheets arranged in a warehouse.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f6f0e4"/>
+      <stop offset="1" stop-color="#cfd9d2"/>
+    </linearGradient>
+    <linearGradient id="sheet" x1="0" x2="1">
+      <stop offset="0" stop-color="#ead7a8"/>
+      <stop offset="1" stop-color="#b08348"/>
+    </linearGradient>
+  </defs>
+  <rect width="760" height="480" fill="url(#bg)"/>
+  <rect y="338" width="760" height="142" fill="#263f35"/>
+  <g transform="translate(136 74)">
+    <path d="M40 52h404l70 64v236H40z" fill="#8f6232" opacity=".32"/>
+    <path d="M0 86h404l70 64v236H0z" fill="url(#sheet)" stroke="#6c4828" stroke-width="5"/>
+    <path d="M404 86v64h70" fill="#d6ad72"/>
+    <path d="M38 126h322M38 170h372M38 214h372M38 258h372M38 302h372" stroke="#7f5730" stroke-width="5" opacity=".55"/>
+    <g fill="#6b4828" opacity=".38">
+      <circle cx="76" cy="146" r="7"/>
+      <circle cx="116" cy="236" r="7"/>
+      <circle cx="330" cy="282" r="7"/>
+      <circle cx="286" cy="168" r="7"/>
+    </g>
+  </g>
+</svg>
