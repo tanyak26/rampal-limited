@@ -555,6 +555,48 @@
       max-width: 15ch;
     }
 
+    .faq-aside {
+      align-self: start;
+      position: sticky;
+      top: 110px;
+    }
+
+    .faq-collage {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .faq-collage img {
+      width: 100%;
+      aspect-ratio: 1 / 0.78;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 24px rgba(24, 35, 28, 0.1);
+    }
+
+    .faq-collage img:first-child {
+      grid-column: span 2;
+      aspect-ratio: 16 / 8;
+    }
+
+    .faq-note {
+      margin-top: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.94rem;
+      box-shadow: 0 12px 28px rgba(24, 35, 28, 0.06);
+    }
+
+    .faq-note strong {
+      color: var(--ink);
+    }
+
     .about-panel li,
     .faq-item {
       padding: 14px 0;
@@ -758,6 +800,10 @@
 
       nav {
         justify-content: flex-start;
+      }
+
+      .faq-aside {
+        position: static;
       }
 
       .hero {
@@ -1026,9 +1072,17 @@
 
     <section id="faq">
       <div class="shell two-col">
-        <div>
+        <div class="faq-aside">
           <p class="eyebrow">FAQ</p>
           <h2>Wholesale building materials FAQ for Southall trade buyers.</h2>
+          <div class="faq-collage" aria-label="RAMPAL LIMITED building materials">
+            <img src="assets/rampal/product-timber.jpg" alt="Timber logs and wood material for trade supply" loading="lazy">
+            <img src="assets/rampal/product-sheet-materials.jpg" alt="Stacked plywood and sheet materials" loading="lazy">
+            <img src="assets/rampal/product-aggregates.jpg" alt="Bulk aggregates and gravel for construction" loading="lazy">
+          </div>
+          <p class="faq-note">
+            <strong>Trade enquiries welcome:</strong> send material type, quantities, delivery area, and timing so the request can be reviewed clearly.
+          </p>
         </div>
         <div class="faq-list">
           <article class="faq-item">
