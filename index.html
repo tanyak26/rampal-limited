@@ -561,25 +561,17 @@
       top: 110px;
     }
 
-    .faq-collage {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+    .faq-image {
       margin-top: 28px;
     }
 
-    .faq-collage img {
+    .faq-image img {
       width: 100%;
-      aspect-ratio: 1 / 0.78;
+      aspect-ratio: 16 / 8.2;
       object-fit: cover;
       border-radius: 8px;
       border: 1px solid var(--line);
       box-shadow: 0 12px 24px rgba(24, 35, 28, 0.1);
-    }
-
-    .faq-collage img:first-child {
-      grid-column: span 2;
-      aspect-ratio: 16 / 8;
     }
 
     .faq-note {
@@ -1075,10 +1067,8 @@
         <div class="faq-aside">
           <p class="eyebrow">FAQ</p>
           <h2>Wholesale building materials FAQ for Southall trade buyers.</h2>
-          <div class="faq-collage" aria-label="RAMPAL LIMITED building materials">
-            <img src="assets/rampal/product-timber.jpg" alt="Timber logs and wood material for trade supply" loading="lazy">
-            <img src="assets/rampal/product-sheet-materials.jpg" alt="Stacked plywood and sheet materials" loading="lazy">
-            <img src="assets/rampal/product-aggregates.jpg" alt="Bulk aggregates and gravel for construction" loading="lazy">
+          <div class="faq-image">
+            <img src="assets/rampal/faq-building-materials.jpg" alt="Construction site with building materials, aggregates, cranes, and sheet materials" loading="lazy">
           </div>
           <p class="faq-note">
             <strong>Trade enquiries welcome:</strong> send material type, quantities, delivery area, and timing so the request can be reviewed clearly.
