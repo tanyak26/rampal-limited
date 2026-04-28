@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 150" role="img" aria-labelledby="title desc">
+  <title id="title">RAMPAL LIMITED logo</title>
+  <desc id="desc">Trade supply logo with a roofline, timber stack, and RAMPAL LIMITED wordmark.</desc>
+  <rect width="520" height="150" rx="12" fill="#fffdf7"/>
+  <g transform="translate(22 22)">
+    <path d="M14 60 64 18l50 42" fill="none" stroke="#18231c" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M31 61h66v48H31z" fill="#2f6654"/>
+    <path d="M43 74h42M43 88h42M43 102h42" stroke="#fffdf7" stroke-width="7" stroke-linecap="round"/>
+    <path d="M105 78h42v31h-42z" fill="#b84d2e"/>
+    <path d="M114 88h24M114 100h24" stroke="#fffdf7" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <g fill="#18231c">
+    <text x="185" y="70" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="800" letter-spacing="2">RAMPAL</text>
+    <text x="188" y="106" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="700" letter-spacing="5" fill="#59665d">LIMITED</text>
+    <text x="188" y="128" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" letter-spacing="2" fill="#b84d2e">WHOLESALE BUILDING MATERIALS</text>
+  </g>
+</svg>

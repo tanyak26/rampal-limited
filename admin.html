@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAMPAL LIMITED Admin</title>
+  <style>
+    :root {
+      --bg: #f4f2ed;
+      --surface: #fffdf7;
+      --surface-strong: #ffffff;
+      --ink: #18231c;
+      --muted: #59665d;
+      --accent: #b84d2e;
+      --accent-2: #2f6654;
+      --border: rgba(24, 35, 28, 0.14);
+      --shadow: 0 12px 28px rgba(24, 35, 28, 0.08);
+      --radius-lg: 8px;
+      --radius-md: 8px;
+      --radius-sm: 6px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .shell {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(244, 242, 237, 0.95);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 12px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand img {
+      width: 180px;
+      max-height: 52px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .button,
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 15px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .button:hover,
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-primary,
+    button {
+      background: var(--accent);
+      color: #fffaf5;
+      box-shadow: none;
+    }
+
+    .button-secondary {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--ink);
+    }
+
+    main {
+      padding: 26px 0 54px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .login-wrap {
+      display: grid;
+      place-items: center;
+      min-height: calc(100vh - 110px);
+    }
+
+    .login-card {
+      width: min(100%, 520px);
+      padding: 32px;
+    }
+
+    h1,
+    h2 {
+      margin: 0 0 10px;
+      line-height: 1.12;
+    }
+
+    h1 {
+      font-size: clamp(1.75rem, 3vw, 2.45rem);
+      max-width: 18ch;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+    }
+
+    p {
+      color: var(--muted);
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin: 18px 0;
+    }
+
+    .field label {
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .field input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .field input:focus,
+    .search:focus {
+      outline: none;
+      border-color: rgba(138, 47, 36, 0.28);
+      box-shadow: 0 0 0 3px rgba(138, 47, 36, 0.08);
+    }
+
+    .login-status,
+    .status {
+      min-height: 24px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .warning {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(239, 163, 58, 0.16);
+      border: 1px solid rgba(239, 163, 58, 0.32);
+      color: #7b4b12;
+      font-weight: 700;
+    }
+
+    .dashboard {
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 18px;
+    }
+
+    .hero-card,
+    .stats-card {
+      padding: 22px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .summary-card {
+      padding: 20px;
+      border-radius: var(--radius-md);
+      background: #f7f4ed;
+      border: 1px solid var(--border);
+    }
+
+    .summary-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1.55rem;
+      color: var(--accent);
+    }
+
+    .stats-card {
+      background: #edf2ed;
+      color: var(--ink);
+    }
+
+    .stats-card p,
+    .stats-card li {
+      color: var(--muted);
+    }
+
+    .stats-card ul {
+      margin: 14px 0 0;
+      padding-left: 18px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toolbar-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search {
+      min-width: min(100%, 320px);
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font: inherit;
+      color: var(--ink);
+    }
+
+    .list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .enquiry-card {
+      padding: 20px;
+    }
+
+    .enquiry-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .enquiry-head h3 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .badge-row,
+    .detail-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .badge,
+    .detail {
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      background: #f8f5ef;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .badge-status-new {
+      background: rgba(239, 163, 58, 0.18);
+    }
+
+    .badge-status-contacted {
+      background: rgba(47, 141, 133, 0.18);
+    }
+
+    .badge-status-quoted {
+      background: rgba(203, 84, 117, 0.18);
+    }
+
+    .badge-status-closed {
+      background: rgba(117, 88, 86, 0.18);
+    }
+
+    .detail strong {
+      margin-right: 6px;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .status-button {
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 251, 246, 0.84);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      box-shadow: none;
+    }
+
+    .status-button.is-active {
+      background: var(--accent);
+      color: #fffaf5;
+    }
+
+    .message-box {
+      margin-top: 14px;
+      padding: 16px 18px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 250, 245, 0.92);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      white-space: pre-wrap;
+    }
+
+    .empty-state {
+      padding: 34px;
+      text-align: center;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <div class="brand">
+        <img src="/assets/rampal/rampal-logo.svg" alt="RAMPAL LIMITED quote dashboard">
+      </div>
+      <div class="top-actions">
+        <a class="button button-secondary" href="/">View Website</a>
+        <button class="hidden" id="refresh-button" type="button">Refresh Quotes</button>
+        <button class="hidden" id="export-button" type="button">Export CSV</button>
+        <button class="hidden" id="logout-button" type="button">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="login-wrap" id="login-view">
+      <article class="panel login-card">
+        <h2>Admin Login</h2>
+        <p>Use your admin password to open the quote request dashboard.</p>
+        <div class="warning hidden" id="default-password-warning">
+          You are still using the starter admin password. Set the `ADMIN_PASSWORD` environment variable before deployment.
+        </div>
+        <form id="login-form">
+          <div class="field">
+            <label for="password">Admin Password</label>
+            <input id="password" name="password" type="password" placeholder="Enter admin password" required>
+          </div>
+          <button type="submit">Sign In</button>
+          <p class="login-status" id="login-status" aria-live="polite"></p>
+        </form>
+      </article>
+    </section>
+
+    <section class="dashboard hidden" id="dashboard-view">
+      <section class="hero">
+        <article class="panel hero-card">
+          <h1>Quote requests in one clean view.</h1>
+          <p>
+            Review wholesale material requests, filter by name or material category, and keep all incoming quote requests
+            organized from one simple admin page.
+          </p>
+          <div class="summary-grid">
+            <div class="summary-card">
+              <strong id="total-count">0</strong>
+              <p>Total quote requests</p>
+            </div>
+            <div class="summary-card">
+              <strong id="timber-count">0</strong>
+              <p>Timber quote requests</p>
+            </div>
+            <div class="summary-card">
+              <strong id="latest-date">-</strong>
+              <p>Latest request</p>
+            </div>
+          </div>
+        </article>
+
+        <aside class="panel stats-card">
+          <h2>Admin Notes</h2>
+          <p>
+            The dashboard is password-protected and backed by SQLite. Notification delivery status is
+            saved with each quote request so email issues are easier to spot and fix.
+          </p>
+          <ul>
+            <li>Set `ADMIN_PASSWORD` to change the starter password.</li>
+            <li>Use `RESEND_API_KEY` and `RESEND_FROM` on Render for reliable hosted email alerts.</li>
+            <li>Quote requests are stored in `data/rampal-quote-requests.db`.</li>
+          </ul>
+        </aside>
+      </section>
+
+      <section class="toolbar">
+        <div class="toolbar-group">
+          <input class="search" id="search-input" type="search" placeholder="Search by name, email, delivery area, or material category">
+        </div>
+        <div class="toolbar-group">
+          <p class="status" id="status-message" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="list" id="enquiry-list"></section>
+      <p class="footer-note">Protected admin route: <code>/rampal-admin</code></p>
+    </section>
+  </main>
+
+  <script>
+    const loginView = document.getElementById("login-view");
+    const dashboardView = document.getElementById("dashboard-view");
+    const loginForm = document.getElementById("login-form");
+    const loginStatus = document.getElementById("login-status");
+    const defaultPasswordWarning = document.getElementById("default-password-warning");
+    const refreshButton = document.getElementById("refresh-button");
+    const exportButton = document.getElementById("export-button");
+    const logoutButton = document.getElementById("logout-button");
+    const enquiryList = document.getElementById("enquiry-list");
+    const statusMessage = document.getElementById("status-message");
+    const searchInput = document.getElementById("search-input");
+    const totalCount = document.getElementById("total-count");
+    const timberCount = document.getElementById("timber-count");
+    const latestDate = document.getElementById("latest-date");
+
+    let allEnquiries = [];
+
+    function formatDate(value) {
+      if (!value) return "-";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      }).format(date);
+    }
+
+    function showLogin(usingDefaultPassword) {
+      loginView.classList.remove("hidden");
+      dashboardView.classList.add("hidden");
+      refreshButton.classList.add("hidden");
+      exportButton.classList.add("hidden");
+      logoutButton.classList.add("hidden");
+      defaultPasswordWarning.classList.toggle("hidden", !usingDefaultPassword);
+    }
+
+    function showDashboard() {
+      loginView.classList.add("hidden");
+      dashboardView.classList.remove("hidden");
+      refreshButton.classList.remove("hidden");
+      exportButton.classList.remove("hidden");
+      logoutButton.classList.remove("hidden");
+    }
+
+    function renderSummary(enquiries) {
+      totalCount.textContent = String(enquiries.length);
+      timberCount.textContent = String(
+        enquiries.filter((item) => item.eventType.toLowerCase().includes("timber")).length
+      );
+      latestDate.textContent = enquiries.length ? formatDate(enquiries[0].createdAt) : "-";
+    }
+
+    function renderEmpty(message) {
+      renderSummary([]);
+      enquiryList.innerHTML = '<article class="panel empty-state"><h2>No quote requests yet</h2><p>' + message + "</p></article>";
+    }
+
+    function renderEnquiries(enquiries) {
+      renderSummary(enquiries);
+
+      if (!enquiries.length) {
+        renderEmpty("New wholesale quote requests will appear here once visitors submit the form.");
+        return;
+      }
+
+      enquiryList.innerHTML = enquiries.map((item) => {
+        const dateLabel = formatDate(item.createdAt);
+        const eventDate = item.eventDate ? formatDate(item.eventDate) : "Not provided";
+        const statusClass = "badge-status-" + String(item.status || "new").toLowerCase();
+        return `
+          <article class="panel enquiry-card">
+            <div class="enquiry-head">
+              <div>
+                <h3>${item.name}</h3>
+                <div class="meta">Reference ${item.id}</div>
+              </div>
+              <div class="meta">Received ${dateLabel}</div>
+            </div>
+            <div class="badge-row">
+              <span class="badge ${statusClass}">${item.status || "New"}</span>
+              <span class="badge">${item.eventType}</span>
+              <span class="badge">${item.packageName || "Order type not selected"}</span>
+              <span class="badge">${item.location || "Delivery area not provided"}</span>
+              <span class="badge">Needed by: ${eventDate}</span>
+            </div>
+            <div class="detail-grid" style="margin-top: 12px;">
+              <span class="detail"><strong>Email:</strong> <a href="mailto:${item.email}">${item.email}</a></span>
+              <span class="detail"><strong>Phone:</strong> <a href="tel:${item.phone}">${item.phone}</a></span>
+              <span class="detail"><strong>Quantity:</strong> ${item.guestCount || "Not provided"}</span>
+              <span class="detail"><strong>Budget range:</strong> ${item.budget || "Not provided"}</span>
+              <span class="detail"><strong>Preferred contact:</strong> ${item.preferredContact || "Not provided"}</span>
+              <span class="detail"><strong>Email alert:</strong> ${item.notificationStatus || "Pending"}</span>
+              ${item.notificationReason ? `<span class="detail"><strong>Alert note:</strong> ${item.notificationReason}</span>` : ""}
+            </div>
+            <div class="message-box">${item.message}</div>
+            <div class="card-actions">
+              ${["New", "Contacted", "Quoted", "Closed"].map((status) => `
+                <button
+                  type="button"
+                  class="status-button ${status === item.status ? "is-active" : ""}"
+                  data-status-id="${item.id}"
+                  data-status-value="${status}"
+                >
+                  ${status}
+                </button>
+              `).join("")}
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      enquiryList.querySelectorAll("[data-status-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const enquiryId = button.getAttribute("data-status-id");
+          const status = button.getAttribute("data-status-value");
+          await updateEnquiryStatus(enquiryId, status);
+        });
+      });
+    }
+
+    function filterEnquiries(query) {
+      const search = query.trim().toLowerCase();
+      if (!search) return allEnquiries;
+
+      return allEnquiries.filter((item) => {
+        return [
+          item.name,
+          item.email,
+          item.phone,
+          item.location,
+          item.eventType,
+          item.packageName,
+          item.preferredContact,
+          item.status,
+          item.message
+        ].some((value) => String(value || "").toLowerCase().includes(search));
+      });
+    }
+
+    async function loadEnquiries() {
+      statusMessage.textContent = "Loading quote requests...";
+
+      try {
+        const response = await fetch("/api/admin/enquiries");
+        const result = await response.json();
+
+        if (response.status === 401) {
+          const session = await fetch("/api/admin/session").then((res) => res.json());
+          showLogin(session.usingDefaultPassword);
+          statusMessage.textContent = "";
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(result.error || "Unable to load quote requests.");
+        }
+
+        allEnquiries = result.enquiries || [];
+        renderEnquiries(filterEnquiries(searchInput.value));
+        statusMessage.textContent = `Loaded ${allEnquiries.length} quote request${allEnquiries.length === 1 ? "" : "s"}.`;
+      } catch (error) {
+        statusMessage.textContent = error.message || "Unable to load quote requests.";
+        renderEmpty("The dashboard could not load quote requests from the backend.");
+      }
+    }
+
+    async function updateEnquiryStatus(id, status) {
+      statusMessage.textContent = `Updating ${id} to ${status}...`;
+
+      try {
+        const response = await fetch("/api/admin/enquiries/status", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ id, status })
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Unable to update quote request status.");
+        }
+
+        await loadEnquiries();
+        statusMessage.textContent = `${id} updated to ${status}.`;
+      } catch (error) {
+        statusMessage.textContent = error.message || "Unable to update quote request status.";
+      }
+    }
+
+    async function checkSession() {
+      const response = await fetch("/api/admin/session");
+      const result = await response.json();
+
+      if (result.authenticated) {
+        showDashboard();
+        await loadEnquiries();
+      } else {
+        showLogin(result.usingDefaultPassword);
+      }
+    }
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      loginStatus.textContent = "Signing in...";
+
+      const payload = {
+        password: document.getElementById("password").value
+      };
+
+      try {
+        const response = await fetch("/api/admin/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Unable to sign in.");
+        }
+
+        loginForm.reset();
+        loginStatus.textContent = "";
+        showDashboard();
+        await loadEnquiries();
+      } catch (error) {
+        loginStatus.textContent = error.message || "Unable to sign in.";
+      }
+    });
+
+    searchInput.addEventListener("input", () => {
+      renderEnquiries(filterEnquiries(searchInput.value));
+    });
+
+    refreshButton.addEventListener("click", loadEnquiries);
+
+    exportButton.addEventListener("click", () => {
+      window.location.href = "/api/admin/export";
+    });
+
+    logoutButton.addEventListener("click", async () => {
+      await fetch("/api/admin/logout", { method: "POST" });
+      showLogin(false);
+      allEnquiries = [];
+      enquiryList.innerHTML = "";
+      statusMessage.textContent = "";
+    });
+
+    checkSession();
+  </script>
+</body>
+</html>

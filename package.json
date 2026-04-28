@@ -1,0 +1,14 @@
+{
+  "name": "rampal-limited",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-stack RAMPAL LIMITED wholesale building materials website with quote enquiry backend.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check": "node --check server.js"
+  }
+}

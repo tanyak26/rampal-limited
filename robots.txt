@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /rampal-admin
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://rampallimited.co.uk/sitemap.xml
