@@ -57,22 +57,26 @@
             "Aggregates",
             "General construction supplies"
           ],
-          "makesOffer": [
-            {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Product",
-                "name": "Wholesale timber and sheet materials"
+          "makesOffer": {
+            "@type": "OfferCatalog",
+            "name": "Wholesale building material quote requests",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Timber and sheet material quote requests"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Cement and aggregate quote requests"
+                }
               }
-            },
-            {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Product",
-                "name": "Cement and aggregate supply"
-              }
-            }
-          ]
+            ]
+          }
         },
         {
           "@type": "WebSite",
