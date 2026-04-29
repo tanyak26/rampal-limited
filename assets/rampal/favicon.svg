@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">RAMPAL LIMITED site icon</title>
+  <desc id="desc">Circular RAMPAL LIMITED building materials icon with a roofline, timber stack, and material block.</desc>
+  <rect width="512" height="512" fill="#fffdf7"/>
+  <circle cx="256" cy="256" r="228" fill="#fffdf7" stroke="#2f6654" stroke-width="22"/>
+  <path d="M129 224 256 118l127 106" fill="none" stroke="#18231c" stroke-width="31" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M169 225h165v121H169z" fill="#2f6654"/>
+  <path d="M199 259h105M199 294h105M199 329h105" stroke="#fffdf7" stroke-width="19" stroke-linecap="round"/>
+  <path d="M333 266h93v80h-93z" fill="#b84d2e"/>
+  <path d="M357 291h45M357 323h45" stroke="#fffdf7" stroke-width="17" stroke-linecap="round"/>
+</svg>
