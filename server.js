@@ -1225,6 +1225,11 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
+  if ((request.method === "GET" || request.method === "HEAD") && url.pathname === "/favicon.ico") {
+    serveStaticFile(request, response, path.join(ROOT, "assets", "rampal", "favicon-512.png"));
+    return;
+  }
+
   if (request.method === "GET" && url.pathname === "/") {
     serveHtml(response, INDEX_PATH);
     return;
