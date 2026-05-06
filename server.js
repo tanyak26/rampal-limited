@@ -399,7 +399,7 @@ function sendJson(response, statusCode, payload, extraHeaders = {}) {
   response.end(JSON.stringify(payload));
 }
 
-function serveHtml(response, filePath) {
+function serveHtml(request, response, filePath) {
   fs.readFile(filePath, "utf8", (error, html) => {
     if (error) {
       sendJson(response, 500, { error: "Unable to load the website." });
@@ -409,7 +409,7 @@ function serveHtml(response, filePath) {
     response.writeHead(200, {
       "Content-Type": "text/html; charset=utf-8"
     });
-    response.end(html);
+    response.end(request.method === "HEAD" ? undefined : html);
   });
 }
 
@@ -1230,13 +1230,13 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
-  if (request.method === "GET" && url.pathname === "/") {
-    serveHtml(response, INDEX_PATH);
+  if ((request.method === "GET" || request.method === "HEAD") && url.pathname === "/") {
+    serveHtml(request, response, INDEX_PATH);
     return;
   }
 
   if (request.method === "GET" && url.pathname === "/rampal-admin") {
-    serveHtml(response, ADMIN_PATH);
+    serveHtml(request, response, ADMIN_PATH);
     return;
   }
 
