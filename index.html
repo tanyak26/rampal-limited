@@ -245,7 +245,7 @@
 
     .hero {
       position: relative;
-      min-height: 560px;
+      min-height: 430px;
       display: grid;
       align-items: start;
       background:
@@ -269,7 +269,7 @@
       content: "";
       position: absolute;
       inset: auto 0 0;
-      height: 160px;
+      height: 82px;
       background: linear-gradient(180deg, transparent, var(--bg));
       pointer-events: none;
     }
@@ -279,7 +279,7 @@
       z-index: 1;
       width: min(calc(100% - 32px), var(--max));
       margin: 0 auto;
-      padding: 16px 0 86px;
+      padding: 8px 0 58px;
     }
 
     .hero-copy {
@@ -308,8 +308,8 @@
     }
 
     h1 {
-      font-size: clamp(2.45rem, 4.2vw, 4.55rem);
-      max-width: 11.5ch;
+      font-size: clamp(2.2rem, 3.4vw, 3.8rem);
+      max-width: 14ch;
     }
 
     h2 {
@@ -792,7 +792,7 @@
       }
 
       .hero {
-        min-height: 540px;
+        min-height: 430px;
         background:
           linear-gradient(90deg, rgba(14, 22, 17, 0.86) 0%, rgba(14, 22, 17, 0.58) 48%, rgba(14, 22, 17, 0.10) 100%),
           url("assets/rampal/wholesale-building-materials-hero.png") center right / cover no-repeat;
@@ -816,7 +816,7 @@
       }
 
       .hero {
-        min-height: 520px;
+        min-height: 410px;
         background:
           linear-gradient(180deg, rgba(14, 22, 17, 0.42), rgba(14, 22, 17, 0.78)),
           url("assets/rampal/wholesale-building-materials-hero.png") 58% center / cover no-repeat;
@@ -824,7 +824,7 @@
 
       .hero-content {
         width: min(calc(100% - 24px), var(--max));
-        padding: 14px 0 74px;
+        padding: 8px 0 52px;
       }
 
       .hero-copy {
@@ -832,7 +832,7 @@
       }
 
       h1 {
-        font-size: clamp(2.15rem, 12vw, 3.1rem);
+        font-size: clamp(1.85rem, 9vw, 2.55rem);
       }
 
       .hero-strip,
@@ -858,14 +858,15 @@
 <body>
   <header class="topbar">
     <div class="topbar-inner shell">
-      <a class="brand" href="#home" aria-label="RAMPAL LIMITED home">
+      <a class="brand" href="/" aria-label="RAMPAL LIMITED home">
         <img class="brand-logo" src="assets/rampal/rampal-logo.svg" alt="RAMPAL LIMITED wholesale building materials">
       </a>
       <nav aria-label="Primary navigation">
-        <a href="#products">Products</a>
-        <a href="#offers">Offers</a>
-        <a href="#company">Company</a>
-        <a href="#faq">FAQ</a>
+        <a href="/" aria-current="page">Home</a>
+        <a href="/about">About Us</a>
+        <a href="/products">Products</a>
+        <a href="/offers">Offers</a>
+        <a href="/faq">FAQ</a>
         <a class="nav-cta" href="#quote">Request Quote</a>
       </nav>
     </div>
@@ -1223,7 +1224,7 @@
   <div class="sticky-bar" aria-label="Quick quote actions">
     <div class="sticky-inner">
       <a class="sticky-link" href="#quote">Quote</a>
-      <a class="sticky-link" href="#products">Products</a>
+      <a class="sticky-link" href="/products">Products</a>
       <a class="sticky-link" href="https://wa.me/447417415090?text=Hello%20RAMPAL%20LIMITED%2C%20I%20would%20like%20a%20quote%20for%20building%20materials.%20Please%20contact%20me." target="_blank" rel="noreferrer">WhatsApp</a>
     </div>
   </div>

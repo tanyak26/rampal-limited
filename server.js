@@ -43,6 +43,10 @@ loadEnvFile();
 
 const PORT = process.env.PORT || 3000;
 const INDEX_PATH = path.join(ROOT, "index.html");
+const ABOUT_PATH = path.join(ROOT, "about.html");
+const PRODUCTS_PATH = path.join(ROOT, "products.html");
+const OFFERS_PATH = path.join(ROOT, "offers.html");
+const FAQ_PATH = path.join(ROOT, "faq.html");
 const ADMIN_PATH = path.join(ROOT, "admin.html");
 const ROBOTS_PATH = path.join(ROOT, "robots.txt");
 const SITEMAP_PATH = path.join(ROOT, "sitemap.xml");
@@ -445,9 +449,14 @@ function serveStaticFile(request, response, filePath) {
       return;
     }
 
+    const mimeType = getMimeType(filePath);
+    const cacheControl = path.extname(filePath).toLowerCase() === ".css"
+      ? "no-cache"
+      : "public, max-age=31536000, immutable";
+
     response.writeHead(200, {
-      "Content-Type": getMimeType(filePath),
-      "Cache-Control": "public, max-age=31536000, immutable"
+      "Content-Type": mimeType,
+      "Cache-Control": cacheControl
     });
     response.end(request.method === "HEAD" ? undefined : data);
   });
@@ -1232,6 +1241,26 @@ const server = http.createServer(async (request, response) => {
 
   if ((request.method === "GET" || request.method === "HEAD") && url.pathname === "/") {
     serveHtml(request, response, INDEX_PATH);
+    return;
+  }
+
+  if ((request.method === "GET" || request.method === "HEAD") && url.pathname === "/about") {
+    serveHtml(request, response, ABOUT_PATH);
+    return;
+  }
+
+  if ((request.method === "GET" || request.method === "HEAD") && url.pathname === "/products") {
+    serveHtml(request, response, PRODUCTS_PATH);
+    return;
+  }
+
+  if ((request.method === "GET" || request.method === "HEAD") && url.pathname === "/offers") {
+    serveHtml(request, response, OFFERS_PATH);
+    return;
+  }
+
+  if ((request.method === "GET" || request.method === "HEAD") && url.pathname === "/faq") {
+    serveHtml(request, response, FAQ_PATH);
     return;
   }
 
