@@ -472,6 +472,46 @@ function getMidxPagePath(pathname) {
   return page ? path.join(MIDX_ROOT, page) : "";
 }
 
+function getMidxRootPagePath(pathname) {
+  const pages = new Map([
+    ["/", "index.html"],
+    ["/index", "index.html"],
+    ["/index.html", "index.html"],
+    ["/about", "about.html"],
+    ["/about.html", "about.html"],
+    ["/products", "products.html"],
+    ["/products.html", "products.html"],
+    ["/services", "services.html"],
+    ["/services.html", "services.html"],
+    ["/faq", "faq.html"],
+    ["/faq.html", "faq.html"],
+    ["/quote", "quote.html"],
+    ["/quote.html", "quote.html"]
+  ]);
+
+  const page = pages.get(pathname);
+  return page ? path.join(MIDX_ROOT, page) : "";
+}
+
+function isMidxHost(request) {
+  const configuredDomains = String(process.env.MIDX_DOMAINS || "")
+    .split(",")
+    .map((domain) => domain.trim().toLowerCase())
+    .filter(Boolean);
+
+  const allowedDomains = new Set([
+    "midxtradersltd.com",
+    "www.midxtradersltd.com",
+    ...configuredDomains
+  ]);
+
+  const host = String(request.headers.host || "")
+    .split(":")[0]
+    .toLowerCase();
+
+  return allowedDomains.has(host);
+}
+
 function serveStaticFile(request, response, filePath) {
   fs.readFile(filePath, (error, data) => {
     if (error) {
@@ -1251,6 +1291,29 @@ const server = http.createServer(async (request, response) => {
     });
     response.end();
     return;
+  }
+
+  if (isMidxHost(request) && (request.method === "GET" || request.method === "HEAD")) {
+    if (url.pathname.startsWith("/assets/")) {
+      const assetPath = path.normalize(path.join(MIDX_ROOT, url.pathname.slice(1)));
+      if (!assetPath.startsWith(MIDX_ASSETS_DIR)) {
+        sendJson(response, 403, { error: "Forbidden." });
+        return;
+      }
+      serveStaticFile(request, response, assetPath);
+      return;
+    }
+
+    if (url.pathname === "/favicon.ico") {
+      serveStaticFile(request, response, path.join(MIDX_ASSETS_DIR, "favicon.svg"));
+      return;
+    }
+
+    const midxRootPagePath = getMidxRootPagePath(url.pathname);
+    if (midxRootPagePath) {
+      serveHtml(request, response, midxRootPagePath);
+      return;
+    }
   }
 
   if ((request.method === "GET" || request.method === "HEAD") && url.pathname.startsWith("/assets/")) {
