@@ -55,6 +55,11 @@ SMTP_FROM=quotes@yourdomain.com
 
 This project includes `render.yaml` for Docker deployment. Create a Render Blueprint or Web Service from the repository, then set the environment variables above.
 
+The same repository can run two separate Render services:
+
+- `rampal-limited` for the RAMPAL LIMITED website
+- `midx-traders-ltd` for the MIDX TRADERS LTD website, using `SITE_MODE=midx`
+
 For production quote storage, create a Render Postgres database and add its internal connection string to the web service as `DATABASE_URL`. If `DATABASE_URL` is missing, the app falls back to local SQLite at `data/rampal-quote-requests.db`, which is useful on your laptop but should not be used for live customer enquiries.
 
 After deployment, submit:

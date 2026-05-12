@@ -42,6 +42,7 @@ function loadEnvFile() {
 loadEnvFile();
 
 const PORT = process.env.PORT || 3000;
+const SITE_MODE = String(process.env.SITE_MODE || "").trim().toLowerCase();
 const INDEX_PATH = path.join(ROOT, "index.html");
 const ABOUT_PATH = path.join(ROOT, "about.html");
 const PRODUCTS_PATH = path.join(ROOT, "products.html");
@@ -522,6 +523,10 @@ function getMidxRootPagePath(pathname) {
 }
 
 function isMidxHost(request) {
+  if (SITE_MODE === "midx") {
+    return true;
+  }
+
   const configuredDomains = String(process.env.MIDX_DOMAINS || "")
     .split(",")
     .map((domain) => domain.trim().toLowerCase())
@@ -592,7 +597,7 @@ function validateEnquiry(payload) {
     guestCount: sanitize(payload.guestCount),
     budget: sanitize(payload.budget),
     preferredContact: sanitize(payload.preferredContact),
-    sourceSite: normalizeSourceSite(payload.sourceSite),
+    sourceSite: normalizeSourceSite(payload.sourceSite || (SITE_MODE === "midx" ? "midx" : "rampal")),
     location: sanitize(payload.location),
     message: sanitize(payload.message)
   };
@@ -1331,6 +1336,44 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
+  if (SITE_MODE === "midx" && (request.method === "GET" || request.method === "HEAD")) {
+    if (url.pathname.startsWith("/assets/")) {
+      const assetPath = path.normalize(path.join(MIDX_ROOT, url.pathname.slice(1)));
+      if (!assetPath.startsWith(MIDX_ASSETS_DIR)) {
+        sendJson(response, 403, { error: "Forbidden." });
+        return;
+      }
+      serveStaticFile(request, response, assetPath);
+      return;
+    }
+
+    if (url.pathname === "/favicon.ico") {
+      serveStaticFile(request, response, path.join(MIDX_ASSETS_DIR, "favicon.svg"));
+      return;
+    }
+
+    if (url.pathname === "/midx-admin") {
+      serveHtml(request, response, MIDX_ADMIN_PATH);
+      return;
+    }
+
+    if (url.pathname === "/midx-traders" || url.pathname === "/midx-traders/") {
+      sendRedirect(response, "/");
+      return;
+    }
+
+    const midxRootPagePath = getMidxRootPagePath(url.pathname);
+    if (midxRootPagePath) {
+      serveHtml(request, response, midxRootPagePath);
+      return;
+    }
+
+    if (!url.pathname.startsWith("/api/")) {
+      sendJson(response, 404, { error: "Route not found." });
+      return;
+    }
+  }
+
   if (isMidxHost(request) && (request.method === "GET" || request.method === "HEAD")) {
     if (url.pathname.startsWith("/assets/")) {
       const assetPath = path.normalize(path.join(MIDX_ROOT, url.pathname.slice(1)));
@@ -1445,7 +1488,10 @@ const server = http.createServer(async (request, response) => {
   }
 
   if (request.method === "GET" && url.pathname === "/api/health") {
-    sendJson(response, 200, { ok: true, service: "RAMPAL LIMITED API" });
+    sendJson(response, 200, {
+      ok: true,
+      service: SITE_MODE === "midx" ? "MIDX TRADERS LTD API" : "RAMPAL LIMITED API"
+    });
     return;
   }
 

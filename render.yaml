@@ -38,3 +38,44 @@ services:
         value: "false"
       - key: DATABASE_URL
         sync: false
+  - type: web
+    name: midx-traders-ltd
+    runtime: docker
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /api/health
+    disk:
+      name: midx-traders-ltd-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: SITE_MODE
+        value: midx
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: MIDX_NOTIFY_EMAIL
+        value: rinrajrinraj76@gmail.com
+      - key: MIDX_DOMAINS
+        value: midxtradersltd.com,www.midxtradersltd.com,midx-traders-ltd.onrender.com
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+      - key: CLIENT_AUTO_REPLY_ENABLED
+        value: "false"
+      - key: DATABASE_URL
+        sync: false
