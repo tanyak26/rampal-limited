@@ -50,6 +50,8 @@ const FAQ_PATH = path.join(ROOT, "faq.html");
 const ADMIN_PATH = path.join(ROOT, "admin.html");
 const ROBOTS_PATH = path.join(ROOT, "robots.txt");
 const SITEMAP_PATH = path.join(ROOT, "sitemap.xml");
+const MIDX_ROOT = path.join(ROOT, "midx-traders");
+const MIDX_ASSETS_DIR = path.join(MIDX_ROOT, "assets");
 const DATA_DIR = path.join(ROOT, "data");
 const DB_PATH = path.join(DATA_DIR, "rampal-quote-requests.db");
 const LEGACY_JSON_PATH = path.join(DATA_DIR, "rampal-quote-requests.json");
@@ -431,6 +433,13 @@ function serveTextFile(response, filePath, contentType) {
   });
 }
 
+function sendRedirect(response, location) {
+  response.writeHead(301, {
+    Location: location
+  });
+  response.end();
+}
+
 function getMimeType(filePath) {
   const extension = path.extname(filePath).toLowerCase();
   if (extension === ".jpeg" || extension === ".jpg") return "image/jpeg";
@@ -440,6 +449,27 @@ function getMimeType(filePath) {
   if (extension === ".css") return "text/css; charset=utf-8";
   if (extension === ".js") return "application/javascript; charset=utf-8";
   return "application/octet-stream";
+}
+
+function getMidxPagePath(pathname) {
+  const pages = new Map([
+    ["/midx-traders/", "index.html"],
+    ["/midx-traders/index", "index.html"],
+    ["/midx-traders/index.html", "index.html"],
+    ["/midx-traders/about", "about.html"],
+    ["/midx-traders/about.html", "about.html"],
+    ["/midx-traders/products", "products.html"],
+    ["/midx-traders/products.html", "products.html"],
+    ["/midx-traders/services", "services.html"],
+    ["/midx-traders/services.html", "services.html"],
+    ["/midx-traders/faq", "faq.html"],
+    ["/midx-traders/faq.html", "faq.html"],
+    ["/midx-traders/quote", "quote.html"],
+    ["/midx-traders/quote.html", "quote.html"]
+  ]);
+
+  const page = pages.get(pathname);
+  return page ? path.join(MIDX_ROOT, page) : "";
 }
 
 function serveStaticFile(request, response, filePath) {
@@ -1232,6 +1262,30 @@ const server = http.createServer(async (request, response) => {
     }
     serveStaticFile(request, response, assetPath);
     return;
+  }
+
+  if ((request.method === "GET" || request.method === "HEAD") && url.pathname === "/midx-traders") {
+    sendRedirect(response, "/midx-traders/");
+    return;
+  }
+
+  if ((request.method === "GET" || request.method === "HEAD") && url.pathname.startsWith("/midx-traders/assets/")) {
+    const requestedAsset = url.pathname.slice("/midx-traders/".length);
+    const assetPath = path.normalize(path.join(MIDX_ROOT, requestedAsset));
+    if (!assetPath.startsWith(MIDX_ASSETS_DIR)) {
+      sendJson(response, 403, { error: "Forbidden." });
+      return;
+    }
+    serveStaticFile(request, response, assetPath);
+    return;
+  }
+
+  if ((request.method === "GET" || request.method === "HEAD") && url.pathname.startsWith("/midx-traders/")) {
+    const midxPagePath = getMidxPagePath(url.pathname);
+    if (midxPagePath) {
+      serveHtml(request, response, midxPagePath);
+      return;
+    }
   }
 
   if ((request.method === "GET" || request.method === "HEAD") && url.pathname === "/favicon.ico") {
