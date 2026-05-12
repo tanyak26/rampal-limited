@@ -52,6 +52,7 @@ const ROBOTS_PATH = path.join(ROOT, "robots.txt");
 const SITEMAP_PATH = path.join(ROOT, "sitemap.xml");
 const MIDX_ROOT = path.join(ROOT, "midx-traders");
 const MIDX_ASSETS_DIR = path.join(MIDX_ROOT, "assets");
+const MIDX_ADMIN_PATH = path.join(ROOT, "midx-admin.html");
 const DATA_DIR = path.join(ROOT, "data");
 const DB_PATH = path.join(DATA_DIR, "rampal-quote-requests.db");
 const LEGACY_JSON_PATH = path.join(DATA_DIR, "rampal-quote-requests.json");
@@ -155,6 +156,7 @@ async function setupDatabase() {
       client_reply_method TEXT,
       client_reply_reason TEXT,
       status TEXT NOT NULL DEFAULT 'New',
+      source_site TEXT NOT NULL DEFAULT 'rampal',
       location TEXT,
       message TEXT NOT NULL
     );
@@ -171,6 +173,7 @@ async function setupDatabase() {
   runSqlSafe("ALTER TABLE enquiries ADD COLUMN client_reply_method TEXT;");
   runSqlSafe("ALTER TABLE enquiries ADD COLUMN client_reply_reason TEXT;");
   runSqlSafe("ALTER TABLE enquiries ADD COLUMN status TEXT NOT NULL DEFAULT 'New';");
+  runSqlSafe("ALTER TABLE enquiries ADD COLUMN source_site TEXT NOT NULL DEFAULT 'rampal';");
 
   const countOutput = runSql("SELECT COUNT(*) AS count FROM enquiries;", { json: true });
   const countRows = countOutput ? JSON.parse(countOutput) : [];
@@ -205,10 +208,13 @@ async function setupPostgresDatabase() {
       client_reply_method TEXT,
       client_reply_reason TEXT,
       status TEXT NOT NULL DEFAULT 'New',
+      source_site TEXT NOT NULL DEFAULT 'rampal',
       location TEXT,
       message TEXT NOT NULL
     );
   `);
+
+  await pgPool.query("ALTER TABLE enquiries ADD COLUMN IF NOT EXISTS source_site TEXT NOT NULL DEFAULT 'rampal';");
 
   const { rows } = await pgPool.query("SELECT COUNT(*)::int AS count FROM enquiries;");
   const count = rows.length ? Number(rows[0].count) : 0;
@@ -244,13 +250,14 @@ async function insertEnquiry(enquiry) {
           client_reply_method,
           client_reply_reason,
           status,
+          source_site,
           location,
           message
         ) VALUES (
           $1, $2, $3, $4, $5,
           $6, $7, $8, $9, $10,
           $11, $12, $13, $14, $15,
-          $16, $17, $18, $19, $20
+          $16, $17, $18, $19, $20, $21
         );
       `,
       [
@@ -272,6 +279,7 @@ async function insertEnquiry(enquiry) {
         enquiry.clientReplyMethod || "",
         enquiry.clientReplyReason || "",
         enquiry.status || "New",
+        enquiry.sourceSite || "rampal",
         enquiry.location || "",
         enquiry.message
       ]
@@ -299,6 +307,7 @@ async function insertEnquiry(enquiry) {
       client_reply_method,
       client_reply_reason,
       status,
+      source_site,
       location,
       message
     ) VALUES (
@@ -320,14 +329,27 @@ async function insertEnquiry(enquiry) {
       ${sqlValue(enquiry.clientReplyMethod || "")},
       ${sqlValue(enquiry.clientReplyReason || "")},
       ${sqlValue(enquiry.status || "New")},
+      ${sqlValue(enquiry.sourceSite || "rampal")},
       ${sqlValue(enquiry.location || "")},
       ${sqlValue(enquiry.message)}
     );
   `);
 }
 
-async function readEnquiries() {
+function normalizeSourceSite(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase() === "midx"
+    ? "midx"
+    : "rampal";
+}
+
+async function readEnquiries(sourceSite = "") {
+  const normalizedSource = sourceSite ? normalizeSourceSite(sourceSite) : "";
+
   if (USE_POSTGRES) {
+    const whereClause = normalizedSource ? "WHERE source_site = $1" : "";
+    const params = normalizedSource ? [normalizedSource] : [];
     const { rows } = await pgPool.query(`
       SELECT
         id,
@@ -348,15 +370,18 @@ async function readEnquiries() {
         client_reply_method AS "clientReplyMethod",
         client_reply_reason AS "clientReplyReason",
         status,
+        source_site AS "sourceSite",
         location,
         message
       FROM enquiries
+      ${whereClause}
       ORDER BY created_at DESC;
-    `);
+    `, params);
 
     return rows;
   }
 
+  const whereClause = normalizedSource ? `WHERE source_site = ${sqlValue(normalizedSource)}` : "";
   const output = runSql(`
     SELECT
       id,
@@ -377,9 +402,11 @@ async function readEnquiries() {
       client_reply_method AS clientReplyMethod,
       client_reply_reason AS clientReplyReason,
       status,
+      source_site AS sourceSite,
       location,
       message
     FROM enquiries
+    ${whereClause}
     ORDER BY datetime(created_at) DESC;
   `, { json: true });
 
@@ -564,6 +591,7 @@ function validateEnquiry(payload) {
     guestCount: sanitize(payload.guestCount),
     budget: sanitize(payload.budget),
     preferredContact: sanitize(payload.preferredContact),
+    sourceSite: normalizeSourceSite(payload.sourceSite),
     location: sanitize(payload.location),
     message: sanitize(payload.message)
   };
@@ -911,9 +939,10 @@ async function deliverEmail({ to, subject, body, enquiryId, label }) {
 }
 
 async function sendNotificationEmail(enquiry) {
-  const subject = `New RAMPAL Quote Request: ${enquiry.eventType} - ${enquiry.name}`;
+  const siteLabel = enquiry.sourceSite === "midx" ? "MIDX TRADERS LTD" : "RAMPAL LIMITED";
+  const subject = `New ${siteLabel} Quote Request: ${enquiry.eventType} - ${enquiry.name}`;
   const body = [
-    "A new wholesale building materials quote request was submitted on the website.",
+    `A new wholesale building materials quote request was submitted on the ${siteLabel} website.`,
     "",
     `Reference: ${enquiry.id}`,
     `Created At: ${enquiry.createdAt}`,
@@ -987,11 +1016,12 @@ async function sendClientReplyEmail(enquiry) {
     return { delivered: false, reason: "Client email is not available." };
   }
 
-  const subject = `RAMPAL LIMITED received your quote request`;
+  const siteLabel = enquiry.sourceSite === "midx" ? "MIDX TRADERS LTD" : "RAMPAL LIMITED";
+  const subject = `${siteLabel} received your quote request`;
   const body = [
     `Hi ${enquiry.name || "there"},`,
     "",
-    "Thank you for getting in touch with RAMPAL LIMITED.",
+    `Thank you for getting in touch with ${siteLabel}.`,
     "Your wholesale building materials quote request has been received successfully and will be reviewed shortly.",
     "",
     `Reference: ${enquiry.id}`,
@@ -1002,7 +1032,7 @@ async function sendClientReplyEmail(enquiry) {
     "If you need to add quantities, delivery details, or product specifications, you can reply to this email.",
     "",
     "Regards,",
-    "RAMPAL LIMITED"
+    siteLabel
   ].join("\n");
 
   return deliverEmail({
@@ -1104,7 +1134,8 @@ async function handleListAdminEnquiries(request, response) {
   }
 
   try {
-    const enquiries = await readEnquiries();
+    const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
+    const enquiries = await readEnquiries(url.searchParams.get("source") || "");
     sendJson(response, 200, { enquiries });
   } catch (error) {
     sendJson(response, 500, { error: "Unable to load quote requests." });
@@ -1167,10 +1198,13 @@ async function handleExportEnquiries(request, response) {
   }
 
   try {
-    const enquiries = await readEnquiries();
+    const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
+    const sourceSite = url.searchParams.get("source") || "";
+    const enquiries = await readEnquiries(sourceSite);
     const header = [
       "id",
       "createdAt",
+      "sourceSite",
       "status",
       "name",
       "phone",
@@ -1193,6 +1227,7 @@ async function handleExportEnquiries(request, response) {
     const rows = enquiries.map((item) => [
       item.id,
       item.createdAt,
+      item.sourceSite,
       item.status,
       item.name,
       item.phone,
@@ -1215,10 +1250,11 @@ async function handleExportEnquiries(request, response) {
     const csv = [header, ...rows]
       .map((row) => row.map(toCsv).join(","))
       .join("\n");
+    const filename = sourceSite ? `${normalizeSourceSite(sourceSite)}-quote-requests.csv` : "rampal-quote-requests.csv";
 
     response.writeHead(200, {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": "attachment; filename=\"rampal-quote-requests.csv\""
+      "Content-Disposition": `attachment; filename="${filename}"`
     });
     response.end(csv);
   } catch (error) {
@@ -1383,6 +1419,11 @@ const server = http.createServer(async (request, response) => {
 
   if (request.method === "GET" && url.pathname === "/rampal-admin") {
     serveHtml(request, response, ADMIN_PATH);
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/midx-admin") {
+    serveHtml(request, response, MIDX_ADMIN_PATH);
     return;
   }
 

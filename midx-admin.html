@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MIDX TRADERS LTD Admin</title>
+  <link rel="icon" href="/midx-traders/assets/favicon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --bg: #f3f4ef;
+      --surface: #ffffff;
+      --ink: #16211f;
+      --muted: #5d6965;
+      --forest: #17322d;
+      --gold: #dca84c;
+      --line: #dfe5df;
+      --danger: #b35a36;
+      --radius: 8px;
+      --shadow: 0 18px 48px rgba(22, 33, 31, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .shell {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(243, 244, 239, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner {
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand img {
+      width: 178px;
+      display: block;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button,
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      background: var(--forest);
+      color: #fff;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .button.secondary,
+    button.secondary {
+      color: var(--forest);
+      background: var(--surface);
+      border-color: var(--line);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    main {
+      padding: 32px 0 58px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .login-wrap {
+      min-height: calc(100vh - 150px);
+      display: grid;
+      place-items: center;
+    }
+
+    .login-card {
+      width: min(100%, 500px);
+      padding: 30px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.12;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+    }
+
+    p {
+      color: var(--muted);
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin: 18px 0;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    input,
+    .search {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 13px 14px;
+      color: var(--ink);
+      background: #fbfaf6;
+      font: inherit;
+    }
+
+    .dashboard {
+      display: grid;
+      gap: 22px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 18px;
+    }
+
+    .hero-card,
+    .side-card,
+    .enquiry-card {
+      padding: 24px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .summary-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f7f6ef;
+    }
+
+    .summary-card strong {
+      display: block;
+      color: var(--gold);
+      font-size: 1.7rem;
+    }
+
+    .warning {
+      padding: 13px 14px;
+      border: 1px solid rgba(179, 90, 54, 0.26);
+      border-radius: var(--radius);
+      background: rgba(179, 90, 54, 0.08);
+      color: var(--danger);
+      font-weight: 800;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .search {
+      width: min(100%, 380px);
+    }
+
+    .status {
+      min-height: 24px;
+      font-weight: 750;
+    }
+
+    .list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .enquiry-head,
+    .badge-row,
+    .detail-grid,
+    .status-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .enquiry-head {
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .badge,
+    .detail {
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f7f6ef;
+      font-size: 0.9rem;
+    }
+
+    .badge-status-new {
+      background: rgba(220, 168, 76, 0.22);
+    }
+
+    .badge-status-contacted {
+      background: rgba(49, 93, 71, 0.16);
+    }
+
+    .badge-status-quoted {
+      background: rgba(86, 106, 120, 0.16);
+    }
+
+    .badge-status-closed {
+      background: rgba(93, 105, 101, 0.14);
+    }
+
+    .message {
+      margin-top: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfaf6;
+      white-space: pre-wrap;
+    }
+
+    .status-actions {
+      margin-top: 14px;
+    }
+
+    .status-button {
+      min-height: 38px;
+      color: var(--forest);
+      background: #fff;
+      border-color: var(--line);
+      box-shadow: none;
+    }
+
+    .status-button.is-active {
+      color: #fff;
+      background: var(--forest);
+    }
+
+    .empty {
+      padding: 34px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 14px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="/midx-traders/" aria-label="View MIDX TRADERS LTD website">
+        <img src="/midx-traders/assets/logo.svg" alt="MIDX TRADERS LTD">
+      </a>
+      <div class="actions">
+        <a class="button secondary" href="/midx-traders/">View Website</a>
+        <button class="hidden secondary" id="refresh-button" type="button">Refresh</button>
+        <button class="hidden secondary" id="export-button" type="button">Export CSV</button>
+        <button class="hidden" id="logout-button" type="button">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="login-wrap" id="login-view">
+      <article class="panel login-card">
+        <h2>Admin Login</h2>
+        <p>Use your admin password to view MIDX TRADERS LTD quote requests.</p>
+        <div class="warning hidden" id="default-password-warning">You are still using the starter admin password. Set a secure `ADMIN_PASSWORD` on Render before relying on this dashboard.</div>
+        <form id="login-form">
+          <div class="field">
+            <label for="password">Admin Password</label>
+            <input id="password" name="password" type="password" required>
+          </div>
+          <button type="submit">Sign In</button>
+          <p class="status" id="login-status" aria-live="polite"></p>
+        </form>
+      </article>
+    </section>
+
+    <section class="dashboard hidden" id="dashboard-view">
+      <section class="hero">
+        <article class="panel hero-card">
+          <h1>MIDX quote requests.</h1>
+          <p>Review trade enquiries from the MIDX website, search by buyer details or material category, and update each request as it moves from new enquiry to quoted or closed.</p>
+          <div class="summary-grid">
+            <div class="summary-card"><strong id="total-count">0</strong><p>Total requests</p></div>
+            <div class="summary-card"><strong id="new-count">0</strong><p>New requests</p></div>
+            <div class="summary-card"><strong id="latest-date">-</strong><p>Latest request</p></div>
+          </div>
+        </article>
+        <aside class="panel side-card">
+          <h2>Admin Notes</h2>
+          <p>This dashboard only shows MIDX TRADERS LTD quote requests. It uses the same secure password system as the existing site admin.</p>
+          <p>When your business email is ready, we can route form notifications there as well.</p>
+        </aside>
+      </section>
+
+      <section class="toolbar">
+        <input class="search" id="search-input" type="search" placeholder="Search name, email, phone, postcode, or category">
+        <p class="status" id="status-message" aria-live="polite"></p>
+      </section>
+
+      <section class="list" id="enquiry-list"></section>
+    </section>
+  </main>
+
+  <script>
+    const loginView = document.getElementById("login-view");
+    const dashboardView = document.getElementById("dashboard-view");
+    const loginForm = document.getElementById("login-form");
+    const loginStatus = document.getElementById("login-status");
+    const defaultPasswordWarning = document.getElementById("default-password-warning");
+    const refreshButton = document.getElementById("refresh-button");
+    const exportButton = document.getElementById("export-button");
+    const logoutButton = document.getElementById("logout-button");
+    const enquiryList = document.getElementById("enquiry-list");
+    const statusMessage = document.getElementById("status-message");
+    const searchInput = document.getElementById("search-input");
+    const totalCount = document.getElementById("total-count");
+    const newCount = document.getElementById("new-count");
+    const latestDate = document.getElementById("latest-date");
+    let allEnquiries = [];
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(date);
+    }
+
+    function showLogin(usingDefaultPassword) {
+      loginView.classList.remove("hidden");
+      dashboardView.classList.add("hidden");
+      refreshButton.classList.add("hidden");
+      exportButton.classList.add("hidden");
+      logoutButton.classList.add("hidden");
+      defaultPasswordWarning.classList.toggle("hidden", !usingDefaultPassword);
+    }
+
+    function showDashboard() {
+      loginView.classList.add("hidden");
+      dashboardView.classList.remove("hidden");
+      refreshButton.classList.remove("hidden");
+      exportButton.classList.remove("hidden");
+      logoutButton.classList.remove("hidden");
+    }
+
+    function renderSummary(enquiries) {
+      totalCount.textContent = String(enquiries.length);
+      newCount.textContent = String(enquiries.filter((item) => item.status === "New").length);
+      latestDate.textContent = enquiries.length ? formatDate(enquiries[0].createdAt) : "-";
+    }
+
+    function renderEmpty(message) {
+      renderSummary([]);
+      enquiryList.innerHTML = `<article class="panel empty"><h2>No MIDX quote requests yet</h2><p>${escapeHtml(message)}</p></article>`;
+    }
+
+    function renderEnquiries(enquiries) {
+      renderSummary(enquiries);
+      if (!enquiries.length) {
+        renderEmpty("New quote requests from the MIDX website will appear here.");
+        return;
+      }
+
+      enquiryList.innerHTML = enquiries.map((item) => {
+        const status = item.status || "New";
+        const statusClass = "badge-status-" + status.toLowerCase();
+        const message = escapeHtml(item.message);
+        return `
+          <article class="panel enquiry-card">
+            <div class="enquiry-head">
+              <div>
+                <h3>${escapeHtml(item.name)}</h3>
+                <div class="meta">Reference ${escapeHtml(item.id)}</div>
+              </div>
+              <div class="meta">Received ${escapeHtml(formatDate(item.createdAt))}</div>
+            </div>
+            <div class="badge-row">
+              <span class="badge ${statusClass}">${escapeHtml(status)}</span>
+              <span class="badge">${escapeHtml(item.eventType)}</span>
+              <span class="badge">${escapeHtml(item.location || "Delivery postcode not provided")}</span>
+            </div>
+            <div class="detail-grid" style="margin-top: 12px;">
+              <span class="detail"><strong>Email:</strong> <a href="mailto:${escapeHtml(item.email)}">${escapeHtml(item.email)}</a></span>
+              <span class="detail"><strong>Phone:</strong> <a href="tel:${escapeHtml(item.phone)}">${escapeHtml(item.phone)}</a></span>
+              <span class="detail"><strong>Company:</strong> ${escapeHtml(item.packageName || "Not provided")}</span>
+              <span class="detail"><strong>Email alert:</strong> ${escapeHtml(item.notificationStatus || "Pending")}</span>
+            </div>
+            <div class="message">${message}</div>
+            <div class="status-actions">
+              ${["New", "Contacted", "Quoted", "Closed"].map((option) => `
+                <button class="status-button ${option === status ? "is-active" : ""}" type="button" data-status-id="${escapeHtml(item.id)}" data-status-value="${option}">${option}</button>
+              `).join("")}
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      enquiryList.querySelectorAll("[data-status-id]").forEach((button) => {
+        button.addEventListener("click", () => updateEnquiryStatus(button.dataset.statusId, button.dataset.statusValue));
+      });
+    }
+
+    function filterEnquiries(query) {
+      const search = query.trim().toLowerCase();
+      if (!search) return allEnquiries;
+      return allEnquiries.filter((item) => [
+        item.name,
+        item.email,
+        item.phone,
+        item.location,
+        item.eventType,
+        item.packageName,
+        item.message,
+        item.status
+      ].some((value) => String(value || "").toLowerCase().includes(search)));
+    }
+
+    async function loadEnquiries() {
+      statusMessage.textContent = "Loading MIDX quote requests...";
+      try {
+        const response = await fetch("/api/admin/enquiries?source=midx");
+        const result = await response.json();
+        if (response.status === 401) {
+          const session = await fetch("/api/admin/session").then((res) => res.json());
+          showLogin(session.usingDefaultPassword);
+          statusMessage.textContent = "";
+          return;
+        }
+        if (!response.ok) throw new Error(result.error || "Unable to load quote requests.");
+        allEnquiries = result.enquiries || [];
+        renderEnquiries(filterEnquiries(searchInput.value));
+        statusMessage.textContent = `Loaded ${allEnquiries.length} request${allEnquiries.length === 1 ? "" : "s"}.`;
+      } catch (error) {
+        statusMessage.textContent = error.message || "Unable to load quote requests.";
+        renderEmpty("The dashboard could not load MIDX quote requests.");
+      }
+    }
+
+    async function updateEnquiryStatus(id, status) {
+      statusMessage.textContent = `Updating ${id}...`;
+      try {
+        const response = await fetch("/api/admin/enquiries/status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, status })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Unable to update status.");
+        await loadEnquiries();
+        statusMessage.textContent = `${id} updated to ${status}.`;
+      } catch (error) {
+        statusMessage.textContent = error.message || "Unable to update status.";
+      }
+    }
+
+    async function checkSession() {
+      const response = await fetch("/api/admin/session");
+      const result = await response.json();
+      if (result.authenticated) {
+        showDashboard();
+        await loadEnquiries();
+      } else {
+        showLogin(result.usingDefaultPassword);
+      }
+    }
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      loginStatus.textContent = "Signing in...";
+      try {
+        const response = await fetch("/api/admin/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: document.getElementById("password").value })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Unable to sign in.");
+        loginForm.reset();
+        loginStatus.textContent = "";
+        showDashboard();
+        await loadEnquiries();
+      } catch (error) {
+        loginStatus.textContent = error.message || "Unable to sign in.";
+      }
+    });
+
+    searchInput.addEventListener("input", () => renderEnquiries(filterEnquiries(searchInput.value)));
+    refreshButton.addEventListener("click", loadEnquiries);
+    exportButton.addEventListener("click", () => {
+      window.location.href = "/api/admin/export?source=midx";
+    });
+    logoutButton.addEventListener("click", async () => {
+      await fetch("/api/admin/logout", { method: "POST" });
+      showLogin(false);
+      allEnquiries = [];
+      enquiryList.innerHTML = "";
+      statusMessage.textContent = "";
+    });
+
+    checkSession();
+  </script>
+</body>
+</html>
