@@ -64,6 +64,7 @@ const DATABASE_URL = process.env.DATABASE_URL || "";
 const USE_POSTGRES = Boolean(DATABASE_URL);
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "change-me-admin-password";
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || "";
+const MIDX_NOTIFY_EMAIL = process.env.MIDX_NOTIFY_EMAIL || "rinrajrinraj76@gmail.com";
 const SMTP_HOST = process.env.SMTP_HOST || "";
 const SMTP_PORT = Number(process.env.SMTP_PORT || 465);
 const SMTP_USER = process.env.SMTP_USER || "";
@@ -737,11 +738,11 @@ async function smtpCommand(socket, readResponse, command, expectedCodes) {
 }
 
 function hasSmtpConfig() {
-  return Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS && SMTP_FROM && NOTIFY_EMAIL);
+  return Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS && SMTP_FROM);
 }
 
 function hasResendConfig() {
-  return Boolean(RESEND_API_KEY && RESEND_FROM && NOTIFY_EMAIL);
+  return Boolean(RESEND_API_KEY && RESEND_FROM);
 }
 
 function delay(ms) {
@@ -940,6 +941,7 @@ async function deliverEmail({ to, subject, body, enquiryId, label }) {
 
 async function sendNotificationEmail(enquiry) {
   const siteLabel = enquiry.sourceSite === "midx" ? "MIDX TRADERS LTD" : "RAMPAL LIMITED";
+  const notificationEmail = enquiry.sourceSite === "midx" ? MIDX_NOTIFY_EMAIL : NOTIFY_EMAIL;
   const subject = `New ${siteLabel} Quote Request: ${enquiry.eventType} - ${enquiry.name}`;
   const body = [
     `A new wholesale building materials quote request was submitted on the ${siteLabel} website.`,
@@ -962,13 +964,13 @@ async function sendNotificationEmail(enquiry) {
     enquiry.message
   ].join("\n");
 
-  if (!NOTIFY_EMAIL) {
-    logNotification(`Notification skipped for ${enquiry.id}: NOTIFY_EMAIL is not configured.`);
-    return { delivered: false, reason: "NOTIFY_EMAIL is not configured." };
+  if (!notificationEmail) {
+    logNotification(`Notification skipped for ${enquiry.id}: notification email is not configured.`);
+    return { delivered: false, reason: "Notification email is not configured." };
   }
 
   return deliverEmail({
-    to: NOTIFY_EMAIL,
+    to: notificationEmail,
     subject,
     body,
     enquiryId: enquiry.id,

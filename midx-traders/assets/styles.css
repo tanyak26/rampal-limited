@@ -468,6 +468,47 @@ textarea {
   color: var(--muted);
 }
 
+.contact-list {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 0;
+}
+
+.contact-list a,
+.contact-list span {
+  color: var(--muted);
+}
+
+.contact-list strong {
+  color: var(--ink);
+}
+
+.map-copy .button {
+  margin-top: 22px;
+}
+
+.panel .contact-list a,
+.panel .contact-list span {
+  color: #dce8df;
+}
+
+.panel .contact-list strong {
+  color: var(--white);
+}
+
+.site-footer .contact-list {
+  margin-top: 0;
+}
+
+.site-footer .contact-list a,
+.site-footer .contact-list span {
+  color: #c8d6cf;
+}
+
+.site-footer .contact-list strong {
+  color: var(--white);
+}
+
 .map-frame {
   min-height: 330px;
   border: 0;

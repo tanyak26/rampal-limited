@@ -32,6 +32,7 @@ The local `.env` file is used for the admin password and notification email. Do 
 ```env
 ADMIN_PASSWORD=your-strong-admin-password
 NOTIFY_EMAIL=quotes@example.com
+MIDX_NOTIFY_EMAIL=rinrajrinraj76@gmail.com
 RESEND_API_KEY=your-resend-api-key
 RESEND_FROM=RAMPAL LIMITED <quotes@yourdomain.com>
 CLIENT_AUTO_REPLY_ENABLED=false
